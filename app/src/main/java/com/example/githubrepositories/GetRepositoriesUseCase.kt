@@ -1,7 +1,7 @@
 package com.example.githubrepositories
 
 import com.example.githubrepositories.coroutines.CoroutinesDispatcherProvider
-import com.example.githubrepositories.data.GetRepositoriesResponse
+import com.example.githubrepositories.data.Repository
 import com.example.githubrepositories.network.ApiResponse
 import com.example.githubrepositories.network.GithubApi
 import kotlinx.coroutines.CancellationException
@@ -12,7 +12,7 @@ class GetRepositoriesUseCase @Inject constructor(
     private val githubApi: GithubApi,
     private val dispatcherProvider: CoroutinesDispatcherProvider
 ) {
-    suspend fun getRepositories(): ApiResponse<List<GetRepositoriesResponse>> {
+    suspend fun getRepositories(): ApiResponse<List<Repository>> {
         return withContext(dispatcherProvider.io) {
             try {
                 val response = githubApi.getRepositories()
