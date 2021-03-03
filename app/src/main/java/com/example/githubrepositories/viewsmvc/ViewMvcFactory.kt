@@ -3,7 +3,6 @@ package com.example.githubrepositories.viewsmvc
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.githubrepositories.ImageLoader
-import com.example.githubrepositories.RepositoriesListViewMvc
 import javax.inject.Inject
 import javax.inject.Provider
 

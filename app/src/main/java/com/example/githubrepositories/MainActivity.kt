@@ -2,8 +2,9 @@ package com.example.githubrepositories
 
 import android.os.Bundle
 import com.example.githubrepositories.coroutines.CoroutinesDispatcherProvider
-import com.example.githubrepositories.data.Repository
+import com.example.githubrepositories.data.ReposListContent
 import com.example.githubrepositories.network.ApiResponse
+import com.example.githubrepositories.viewsmvc.RepositoriesListViewMvc
 import com.example.githubrepositories.viewsmvc.ViewMvcFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancelChildren
@@ -69,8 +70,8 @@ class MainActivity : BaseActivity(), RepositoriesListViewMvc.Listener {
         showMessage(getString(R.string.network_error))
     }
 
-    override fun onRepositoryClicked(clickedRepo: Repository) {
-        showMessage("${clickedRepo.name} clicked")
+    override fun onRepositoryClicked(clickedItem: ReposListContent) {
+        showMessage("${clickedItem.repository.name} clicked")
     }
 
 }

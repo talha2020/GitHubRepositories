@@ -1,5 +1,6 @@
-package com.example.githubrepositories
+package com.example.githubrepositories.viewsmvc
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +9,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.githubrepositories.data.Repository
-import com.example.githubrepositories.viewsmvc.BaseViewMvc
+import com.example.githubrepositories.ImageLoader
+import com.example.githubrepositories.R
+import com.example.githubrepositories.data.ReposListContent
+import com.example.githubrepositories.setGone
+import com.example.githubrepositories.show
 
 class RepositoriesListViewMvc(
     layoutInflater: LayoutInflater,
@@ -22,7 +26,7 @@ class RepositoriesListViewMvc(
 ) {
 
     interface Listener {
-        fun onRepositoryClicked(clickedRepo: Repository)
+        fun onRepositoryClicked(clickedRepo: ReposListContent)
     }
 
     private val progressBar: ProgressBar
@@ -35,7 +39,7 @@ class RepositoriesListViewMvc(
 
         // init recycler view
         repositoriesRv.layoutManager = LinearLayoutManager(context)
-        repositoriesAdapter = RepositoriesAdapter(imageLoader) { clickedQuestion ->
+        repositoriesAdapter = RepositoriesAdapter(context, imageLoader) { clickedQuestion ->
             for (listener in listeners) {
                 listener.onRepositoryClicked(clickedQuestion)
             }
@@ -44,7 +48,7 @@ class RepositoriesListViewMvc(
 
     }
 
-    fun bindRepositories(questions: List<Repository>) {
+    fun bindRepositories(questions: List<ReposListContent>) {
         repositoriesAdapter.bindData(questions)
     }
 
@@ -57,20 +61,22 @@ class RepositoriesListViewMvc(
     }
 
     class RepositoriesAdapter(
+        private val context: Context,
         private val imageLoader: ImageLoader,
-        private val onRepositoryClickListener: (Repository) -> Unit
+        private val onRepositoryClickListener: (ReposListContent) -> Unit
     ) : RecyclerView.Adapter<RepositoriesAdapter.QuestionViewHolder>() {
 
-        private var repositoryList: List<Repository> = ArrayList(0)
+        private var repositoryList: List<ReposListContent> = ArrayList(0)
 
         inner class QuestionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val ownerAvatar: ImageView = view.findViewById(R.id.ownerAvatar)
             val name: TextView = view.findViewById(R.id.name)
             val description: TextView = view.findViewById(R.id.description)
             val language: TextView = view.findViewById(R.id.language)
+            val mostActiveContributor: TextView = view.findViewById(R.id.mostActiveContributor)
         }
 
-        fun bindData(questions: List<Repository>) {
+        fun bindData(questions: List<ReposListContent>) {
             repositoryList = ArrayList(questions)
             notifyDataSetChanged()
         }
@@ -84,11 +90,15 @@ class RepositoriesListViewMvc(
         override fun onBindViewHolder(holder: QuestionViewHolder, position: Int) {
             val item = repositoryList[position]
             holder.ownerAvatar
-            holder.name.text = item.name
-            holder.description.text = item.description
-            holder.language.text = item.language
+            holder.name.text = item.repository.name
+            holder.description.text = item.repository.description
+            holder.language.text = context.getString(R.string.language, item.repository.language)
 
-            imageLoader.loadImage(item.owner.avatarUrl, holder.ownerAvatar)
+            item.mostActiveContributor?.let {
+                holder.mostActiveContributor.text =
+                    context.getString(R.string.contributor, it.login)
+                imageLoader.loadImage(it.avatarUrl, holder.ownerAvatar)
+            }
 
             holder.itemView.setOnClickListener {
                 onRepositoryClickListener.invoke(repositoryList[position])

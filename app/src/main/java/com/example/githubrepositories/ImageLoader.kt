@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class ImageLoader @Inject constructor(private val activity: AppCompatActivity) {
 
-    private val requestOptions = RequestOptions().centerCrop()
+    private val requestOptions = RequestOptions().circleCrop()
 
     fun loadImage(imageUrl: String, target: ImageView) {
         Glide.with(activity).load(imageUrl).apply(requestOptions).into(target)
