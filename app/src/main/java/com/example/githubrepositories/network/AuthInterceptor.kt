@@ -8,6 +8,10 @@ import java.io.IOException
 
 class AuthInterceptor : Interceptor {
 
+    /*
+    Due to rate limiting, added this authorization header. More info here:
+    https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
+     */
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()

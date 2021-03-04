@@ -12,6 +12,10 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+/**
+ * Most of the application business logic should be encapsulated in
+ * compact UseCases/Interactors.
+ */
 class GetRepositoriesUseCase @Inject constructor(
     private val githubApi: GithubApi,
     private val dispatcherProvider: CoroutinesDispatcherProvider
@@ -30,6 +34,8 @@ class GetRepositoriesUseCase @Inject constructor(
                     }
                     return@withContext ApiResponse.Success(listContent)
                 } else {
+                    // Not doing full error handling here and just returning the Failure object
+                    // In production app I'll consider all the scenarios and make sure all of them are handled properly.
                     return@withContext ApiResponse.Failure
                 }
             } catch (t: Throwable) {
@@ -46,7 +52,7 @@ class GetRepositoriesUseCase @Inject constructor(
         return withContext(dispatcherProvider.io) {
 
             val contributorsResponse = repositories.map {
-                async { githubApi.getRepositoryContributers(repo = it.name) }
+                async { githubApi.getRepositoryContributors(repo = it.name) }
             }.awaitAll()
 
             return@withContext contributorsResponse.map { response ->

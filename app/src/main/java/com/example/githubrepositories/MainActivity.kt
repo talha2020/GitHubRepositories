@@ -12,6 +12,19 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
+/**
+ * Decided to go with the classic MVC pattern. Anything related to the view is abstracted away and
+ * is created through [ViewMvcFactory]. Activity and Fragment are considered controllers in this scenario
+ * that takes the actions from the view and then contact the business logic layer through UseCases to perform actions
+ * and also call certain view functions with data received from the business logic layer.
+ *
+ * This makes the testing of controller logic difficult. Ideally it should contain just a plumbing logic
+ * between business layer and views and most of the logic should live in UseCases but even then we may
+ * want to test that plumbing logic. In that case, controller logic can be abstracted out of the Activity
+ * class as well which will make it easily testable. Decided to keep it straight forward here.
+ */
+
 class MainActivity : BaseActivity(), RepositoriesListViewMvc.Listener {
 
     @Inject
@@ -29,7 +42,6 @@ class MainActivity : BaseActivity(), RepositoriesListViewMvc.Listener {
     private var networkJob: Job = Job().apply { cancel() }
 
     private var pageNumber = 1
-    private var isLoading = false
     private var isLastPage = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,15 +66,16 @@ class MainActivity : BaseActivity(), RepositoriesListViewMvc.Listener {
     }
 
     private fun fetchRepositories() {
-        if (!isLoading && !isLastPage && !networkJob.isActive) {
+        if (!isLastPage && !networkJob.isActive) {
             networkJob = coroutineScope.launch {
-                isLoading = true
                 viewMvc.showProgressIndication()
                 try {
                     when (val result = getRepositoriesUseCase.getRepositories(pageNumber)) {
                         is ApiResponse.Success -> {
                             ++pageNumber
                             viewMvc.bindRepositories(result.data)
+                            // This logic can be moved inside usecase so it informs you if
+                            // no more data is available, that will make controller logic simpler.
                             if (result.data.isNullOrEmpty()) {
                                 isLastPage = true
                             }
@@ -71,9 +84,7 @@ class MainActivity : BaseActivity(), RepositoriesListViewMvc.Listener {
                     }
                 } finally {
                     viewMvc.hideProgressIndication()
-                    isLoading = false
                 }
-
             }
         }
     }
@@ -82,8 +93,8 @@ class MainActivity : BaseActivity(), RepositoriesListViewMvc.Listener {
         showMessage(getString(R.string.network_error))
     }
 
-    override fun onRepositoryClicked(clickedItem: ReposListContent) {
-        showMessage("${clickedItem.repository.name} clicked")
+    override fun onRepositoryClicked(clickedRepo: ReposListContent) {
+        showMessage("${clickedRepo.repository.name} clicked")
     }
 
     override fun loadMoreItems() {

@@ -10,6 +10,9 @@ import retrofit2.http.Query
 
 interface GithubApi {
 
+    /* sortOrder should take an enum here so that we don't pass on any unsupported String,
+    leaving it as is for now
+    */
     @GET(Constants.BASE_URL + "orgs/{org}/repos")
     suspend fun getRepositories(
         @Path("org") org: String = "Vincit",
@@ -20,12 +23,10 @@ interface GithubApi {
 
 
     @GET(Constants.BASE_URL + "repos/{owner}/{repo}/contributors")
-    suspend fun getRepositoryContributers(
+    suspend fun getRepositoryContributors(
         @Path("owner") owner: String = "Vincit",
         @Path("repo") repo: String
     ): Response<List<Contributor>>
 
-    // Rate limits: https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
 }
 
-//TODO: sort order should be an enum

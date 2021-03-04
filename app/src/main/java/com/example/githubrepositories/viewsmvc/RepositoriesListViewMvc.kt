@@ -24,7 +24,6 @@ class RepositoriesListViewMvc(
     parent,
     R.layout.activity_main
 ) {
-
     private val layoutManager = LinearLayoutManager(context)
 
     interface Listener {
@@ -87,9 +86,9 @@ class RepositoriesListViewMvc(
         }
 
         fun bindData(questions: List<ReposListContent>) {
+            val previousSize = repositoryList.size
             repositoryList.addAll(questions)
-            //TODO: Maybe call notify on items added or something
-            notifyDataSetChanged()
+            notifyItemRangeInserted(previousSize, repositoryList.size - previousSize)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestionViewHolder {
