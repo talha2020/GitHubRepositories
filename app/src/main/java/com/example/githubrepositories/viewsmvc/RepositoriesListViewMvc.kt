@@ -71,7 +71,9 @@ class RepositoriesListViewMvc(
 
     /**
      * Keeping the view very simple here and haven't covered the case when certain fields are empty
-     * or too long/short etc.
+     * or too long/short etc. Also, would be nice to show the loader as a footer of this recyclerview
+     * which can be achieved by exposing the info about data from controller to the view. Keeping it
+     * simple for the purpose of the exercise.
      */
     class RepositoriesAdapter(
         private val context: Context,
