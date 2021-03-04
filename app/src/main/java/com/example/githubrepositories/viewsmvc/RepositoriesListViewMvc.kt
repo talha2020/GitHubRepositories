@@ -69,6 +69,10 @@ class RepositoriesListViewMvc(
         progressBar.setGone()
     }
 
+    /**
+     * Keeping the view very simple here and haven't covered the case when certain fields are empty
+     * or too long/short etc.
+     */
     class RepositoriesAdapter(
         private val context: Context,
         private val imageLoader: ImageLoader,

@@ -24,7 +24,6 @@ import javax.inject.Inject
  * want to test that plumbing logic. In that case, controller logic can be abstracted out of the Activity
  * class as well which will make it easily testable. Decided to keep it straight forward here.
  */
-
 class MainActivity : BaseActivity(), RepositoriesListViewMvc.Listener {
 
     @Inject
