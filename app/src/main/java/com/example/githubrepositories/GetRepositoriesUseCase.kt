@@ -16,10 +16,10 @@ class GetRepositoriesUseCase @Inject constructor(
     private val githubApi: GithubApi,
     private val dispatcherProvider: CoroutinesDispatcherProvider
 ) {
-    suspend fun getRepositories(): ApiResponse<List<ReposListContent>> {
+    suspend fun getRepositories(pageNumber: Int): ApiResponse<List<ReposListContent>> {
         return withContext(dispatcherProvider.io) {
             try {
-                val response = githubApi.getRepositories()
+                val response = githubApi.getRepositories(page = pageNumber)
                 if (response.isSuccessful && response.body() != null) {
                     val contributorsList = getContributors(response.body()!!)
                     val listContent = response.body()!!.mapIndexed { index, repository ->
@@ -57,6 +57,5 @@ class GetRepositoriesUseCase @Inject constructor(
                 }
             }
         }
-
     }
 }

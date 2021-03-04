@@ -2,6 +2,7 @@ package com.example.githubrepositories.app
 
 import android.app.Application
 import com.example.githubrepositories.Constants
+import com.example.githubrepositories.network.AuthInterceptor
 import com.example.githubrepositories.network.GithubApi
 import dagger.Module
 import dagger.Provides
@@ -19,7 +20,11 @@ class AppModule(private val application: Application) {
     fun retrofit(): Retrofit {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
-        val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor())
+            .addInterceptor(interceptor)
+            .build()
 
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)

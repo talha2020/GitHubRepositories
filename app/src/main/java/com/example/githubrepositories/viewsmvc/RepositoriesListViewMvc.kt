@@ -17,7 +17,7 @@ import com.example.githubrepositories.show
 
 class RepositoriesListViewMvc(
     layoutInflater: LayoutInflater,
-    private val imageLoader: ImageLoader,
+    imageLoader: ImageLoader,
     parent: ViewGroup?
 ) : BaseViewMvc<RepositoriesListViewMvc.Listener>(
     layoutInflater,
@@ -25,8 +25,11 @@ class RepositoriesListViewMvc(
     R.layout.activity_main
 ) {
 
+    private val layoutManager = LinearLayoutManager(context)
+
     interface Listener {
         fun onRepositoryClicked(clickedRepo: ReposListContent)
+        fun loadMoreItems()
     }
 
     private val progressBar: ProgressBar
@@ -38,7 +41,7 @@ class RepositoriesListViewMvc(
         repositoriesRv = findViewById(R.id.repositoriesRv)
 
         // init recycler view
-        repositoriesRv.layoutManager = LinearLayoutManager(context)
+        repositoriesRv.layoutManager = layoutManager
         repositoriesAdapter = RepositoriesAdapter(context, imageLoader) { clickedQuestion ->
             for (listener in listeners) {
                 listener.onRepositoryClicked(clickedQuestion)
@@ -46,6 +49,13 @@ class RepositoriesListViewMvc(
         }
         repositoriesRv.adapter = repositoriesAdapter
 
+        repositoriesRv.addOnScrollListener(object : PaginationListener(layoutManager) {
+            override fun loadMoreItems() {
+                for (listener in listeners) {
+                    listener.loadMoreItems()
+                }
+            }
+        })
     }
 
     fun bindRepositories(questions: List<ReposListContent>) {
@@ -66,7 +76,7 @@ class RepositoriesListViewMvc(
         private val onRepositoryClickListener: (ReposListContent) -> Unit
     ) : RecyclerView.Adapter<RepositoriesAdapter.QuestionViewHolder>() {
 
-        private var repositoryList: List<ReposListContent> = ArrayList(0)
+        private var repositoryList: MutableList<ReposListContent> = mutableListOf()
 
         inner class QuestionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val ownerAvatar: ImageView = view.findViewById(R.id.ownerAvatar)
@@ -77,7 +87,8 @@ class RepositoriesListViewMvc(
         }
 
         fun bindData(questions: List<ReposListContent>) {
-            repositoryList = ArrayList(questions)
+            repositoryList.addAll(questions)
+            //TODO: Maybe call notify on items added or something
             notifyDataSetChanged()
         }
 
@@ -110,4 +121,5 @@ class RepositoriesListViewMvc(
         }
 
     }
+
 }

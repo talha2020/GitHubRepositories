@@ -24,6 +24,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.buildConfigField "String", "GITHUB_PERSONAL_TOKEN" , "\""+getGithubPersonalToken()+"\""
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -31,6 +36,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+}
+
+static def getGithubPersonalToken(){
+    Properties props = new Properties()
+    props.load(new FileInputStream(new File('secrets.properties')))
+    return props['GITHUB_PERSONAL_TOKEN']
 }
 
 dependencies {

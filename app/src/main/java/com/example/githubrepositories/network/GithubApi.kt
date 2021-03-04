@@ -14,7 +14,8 @@ interface GithubApi {
     suspend fun getRepositories(
         @Path("org") org: String = "Vincit",
         @Query("sort") sortOrder: String = "updated",
-        @Query("per_page") count: Int = 10
+        @Query("per_page") count: Int = 15,
+        @Query("page") page: Int
     ): Response<List<Repository>>
 
 
